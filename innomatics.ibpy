@@ -1,0 +1,469 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "cb84af3e",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "<class 'list'>\n",
+      "10\n"
+     ]
+    }
+   ],
+   "source": [
+    "import os\n",
+    "\n",
+    "import docx2txt\n",
+    "\n",
+    "import pdfplumber\n",
+    "\n",
+    "import numpy as np\n",
+    "\n",
+    "import pandas as pd\n",
+    "\n",
+    "import re\n",
+    "\n",
+    "path = \"C:\\\\Users\\\\SNEHA Y\\\\OneDrive\\\\Desktop\\\\resume_internhip\"\n",
+    "\n",
+    "file_list = os.listdir(path)\n",
+    "\n",
+    "print(type(file_list))\n",
+    "\n",
+    "print(len(file_list))\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "75a06957",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Number of Resumes: 10\n",
+      "File Names (First 5 resumes):\n",
+      "['Allam Sridhar Resume.pdf', 'Charishma-kurra-FlowCV-Resume-20241009 (3).pdf', 'CV Resume.pdf', 'geetha_resume.pdf', 'Rahul_Resume.pdf']\n"
+     ]
+    }
+   ],
+   "source": [
+    "path = \"C:\\\\Users\\\\SNEHA Y\\\\OneDrive\\\\Desktop\\\\resume_internhip\"\n",
+    "\n",
+    "file_names = os.listdir(path)\n",
+    "\n",
+    "print(\"Number of Resumes:\", len(file_names))\n",
+    "\n",
+    "print(\"File Names (First 5 resumes):\")\n",
+    "\n",
+    "print(file_names [:5])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "5cded0df",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "('CV Resume - CV Resume', '.pdf')"
+      ]
+     },
+     "execution_count": 3,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "os.path.splitext(\"CV Resume - CV Resume.pdf\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "d095ab73",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "{'.pdf', '.docx', '.ipynb'}\n"
+     ]
+    }
+   ],
+   "source": [
+    "file_extensions = []\n",
+    "\n",
+    "for file_name in os.listdir(path):\n",
+    "    file_extensions.append(os.path.splitext(file_name) [-1])\n",
+    "\n",
+    "print(set(file_extensions))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "id": "9f23d6f1",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Counter({'.pdf': 8, '.ipynb': 1, '.docx': 1})\n",
+      "\n",
+      "File Extensions and Count:\n",
+      ".pdf: 8\n",
+      ".ipynb: 1\n",
+      ".docx: 1\n"
+     ]
+    }
+   ],
+   "source": [
+    "from collections import Counter\n",
+    "\n",
+    "file_extensions_count = Counter(file_extensions)\n",
+    "\n",
+    "print(file_extensions_count)\n",
+    "\n",
+    "print()\n",
+    "\n",
+    "print(\"File Extensions and Count:\")\n",
+    "\n",
+    "for ext, cnt in file_extensions_count.items():\n",
+    "    print(f\"{ext}: {cnt}\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "id": "fec62f77",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def extract_text_from_docx(file_path):\n",
+    "\n",
+    "    text = docx2txt.process(file_path)\n",
+    "    return text\n",
+    "\n",
+    "def extract_text_from_pdf(file_path):\n",
+    "    text=' '\n",
+    "    with pdfplumber.open(file_path) as pdf:\n",
+    "        for page in pdf.pages:\n",
+    "            text += page.extract_text()\n",
+    "    return text"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "id": "acbcc4ec",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "path: C:\\Users\\SNEHA Y\\OneDrive\\Desktop\\resume_internhip\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(\"path:\",path)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "id": "89b9b241",
+   "metadata": {
+    "scrolled": true
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "PDF Error For: C:\\Users\\SNEHA Y\\OneDrive\\Desktop\\resume_internhipAllam Sridhar Resume.pdf\n",
+      "PDF Error For: C:\\Users\\SNEHA Y\\OneDrive\\Desktop\\resume_internhipCharishma-kurra-FlowCV-Resume-20241009 (3).pdf\n",
+      "PDF Error For: C:\\Users\\SNEHA Y\\OneDrive\\Desktop\\resume_internhipCV Resume.pdf\n",
+      "PDF Error For: C:\\Users\\SNEHA Y\\OneDrive\\Desktop\\resume_internhipgeetha_resume.pdf\n",
+      "PDF Error For: C:\\Users\\SNEHA Y\\OneDrive\\Desktop\\resume_internhipRahul_Resume.pdf\n",
+      "PDF Error For: C:\\Users\\SNEHA Y\\OneDrive\\Desktop\\resume_internhipRanjeet S Data Analysis.pdf\n",
+      "PDF Error For: C:\\Users\\SNEHA Y\\OneDrive\\Desktop\\resume_internhipRIDHAM_KALRA_CV_1.pdf\n",
+      "DOCX Error For: C:\\Users\\SNEHA Y\\OneDrive\\Desktop\\resume_internhipVenky Resume.docx\n",
+      "PDF Error For: C:\\Users\\SNEHA Y\\OneDrive\\Desktop\\resume_internhipYeswanth_Yerra_CV (1).pdf\n"
+     ]
+    },
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>file_name</th>\n",
+       "      <th>text</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "Empty DataFrame\n",
+       "Columns: [file_name, text]\n",
+       "Index: []"
+      ]
+     },
+     "execution_count": 8,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df = pd.DataFrame(columns=['file_name', 'text'])\n",
+    "\n",
+    "for file_name in os.listdir(path):\n",
+    "    file_path = path+file_name\n",
+    "    text= ''\n",
+    "    if file_name.endswith(\".pdf\") or file_name.endswith(\".PDF\"):\n",
+    "        try:\n",
+    "            text = extract_text_from_pdf(file_path)\n",
+    "        except:\n",
+    "            print(\"PDF Error For:\", file_path)\n",
+    "    if file_name.endswith(\".docx\"):\n",
+    "        try:\n",
+    "            text = extract_text_from_docx(file_path)\n",
+    "        except:\n",
+    "            print(\"DOCX Error For:\", file_path)\n",
+    "    if text:\n",
+    "        df.loc[len(df)] = [file_name, text]\n",
+    "df.head()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "id": "5b399dcd",
+   "metadata": {
+    "scrolled": true
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "PDF Error For: C:\\Users\\SNEHA Y\\OneDrive\\Desktop\\resume_internhipAllam Sridhar Resume.pdf\n",
+      "PDF Error For: C:\\Users\\SNEHA Y\\OneDrive\\Desktop\\resume_internhipCharishma-kurra-FlowCV-Resume-20241009 (3).pdf\n",
+      "PDF Error For: C:\\Users\\SNEHA Y\\OneDrive\\Desktop\\resume_internhipCV Resume.pdf\n",
+      "PDF Error For: C:\\Users\\SNEHA Y\\OneDrive\\Desktop\\resume_internhipgeetha_resume.pdf\n",
+      "PDF Error For: C:\\Users\\SNEHA Y\\OneDrive\\Desktop\\resume_internhipRahul_Resume.pdf\n",
+      "PDF Error For: C:\\Users\\SNEHA Y\\OneDrive\\Desktop\\resume_internhipRanjeet S Data Analysis.pdf\n",
+      "PDF Error For: C:\\Users\\SNEHA Y\\OneDrive\\Desktop\\resume_internhipRIDHAM_KALRA_CV_1.pdf\n",
+      "DOCX Error For: C:\\Users\\SNEHA Y\\OneDrive\\Desktop\\resume_internhipVenky Resume.docx\n",
+      "PDF Error For: C:\\Users\\SNEHA Y\\OneDrive\\Desktop\\resume_internhipYeswanth_Yerra_CV (1).pdf\n"
+     ]
+    },
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>file_name</th>\n",
+       "      <th>text</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "Empty DataFrame\n",
+       "Columns: [file_name, text]\n",
+       "Index: []"
+      ]
+     },
+     "execution_count": 8,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df = pd.DataFrame(columns=['file_name', 'text'])\n",
+    "\n",
+    "for file_name in os.listdir(path):\n",
+    "    file_path = path+file_name\n",
+    "    text= ''\n",
+    "    if file_name.endswith(\".pdf\") or file_name.endswith(\".PDF\"):\n",
+    "        try:\n",
+    "            text = extract_text_from_pdf(file_path)\n",
+    "        except:\n",
+    "            print(\"PDF Error For:\", file_path)\n",
+    "    if file_name.endswith(\".docx\"):\n",
+    "        try:\n",
+    "            text = extract_text_from_docx(file_path)\n",
+    "        except:\n",
+    "            print(\"DOCX Error For:\", file_path)\n",
+    "    if text:\n",
+    "        df.loc[len(df)] = [file_name, text]\n",
+    "df.head()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "id": "54bf5f9d",
+   "metadata": {
+    "scrolled": true
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "PDF Error For: C:\\Users\\SNEHA Y\\OneDrive\\Desktop\\resume_internhipAllam Sridhar Resume.pdf\n",
+      "PDF Error For: C:\\Users\\SNEHA Y\\OneDrive\\Desktop\\resume_internhipCharishma-kurra-FlowCV-Resume-20241009 (3).pdf\n",
+      "PDF Error For: C:\\Users\\SNEHA Y\\OneDrive\\Desktop\\resume_internhipCV Resume.pdf\n",
+      "PDF Error For: C:\\Users\\SNEHA Y\\OneDrive\\Desktop\\resume_internhipgeetha_resume.pdf\n",
+      "PDF Error For: C:\\Users\\SNEHA Y\\OneDrive\\Desktop\\resume_internhipRahul_Resume.pdf\n",
+      "PDF Error For: C:\\Users\\SNEHA Y\\OneDrive\\Desktop\\resume_internhipRanjeet S Data Analysis.pdf\n",
+      "PDF Error For: C:\\Users\\SNEHA Y\\OneDrive\\Desktop\\resume_internhipRIDHAM_KALRA_CV_1.pdf\n",
+      "DOCX Error For: C:\\Users\\SNEHA Y\\OneDrive\\Desktop\\resume_internhipVenky Resume.docx\n",
+      "PDF Error For: C:\\Users\\SNEHA Y\\OneDrive\\Desktop\\resume_internhipYeswanth_Yerra_CV (1).pdf\n"
+     ]
+    },
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>file_name</th>\n",
+       "      <th>text</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "Empty DataFrame\n",
+       "Columns: [file_name, text]\n",
+       "Index: []"
+      ]
+     },
+     "execution_count": 8,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df = pd.DataFrame(columns=['file_name', 'text'])\n",
+    "\n",
+    "for file_name in os.listdir(path):\n",
+    "    file_path = path+file_name\n",
+    "    text= ''\n",
+    "    if file_name.endswith(\".pdf\") or file_name.endswith(\".PDF\"):\n",
+    "        try:\n",
+    "            text = extract_text_from_pdf(file_path)\n",
+    "        except:\n",
+    "            print(\"PDF Error For:\", file_path)\n",
+    "    if file_name.endswith(\".docx\"):\n",
+    "        try:\n",
+    "            text = extract_text_from_docx(file_path)\n",
+    "        except:\n",
+    "            print(\"DOCX Error For:\", file_path)\n",
+    "    if text:\n",
+    "        df.loc[len(df)] = [file_name, text]\n",
+    "df.head()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "663e329c",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.9.13"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
